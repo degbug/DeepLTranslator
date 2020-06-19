@@ -1,3 +1,4 @@
+import com.machinepublishers.jbrowserdriver.ProxyConfig;
 import com.machinepublishers.jbrowserdriver.Timezone;
 import de.linus.deepltranslator.DeepLConfiguration;
 import de.linus.deepltranslator.DeepLTranslator;
@@ -10,6 +11,7 @@ public class DeepLTranslatorTest {
         DeepLConfiguration deepLConfiguration = new DeepLConfiguration.Builder()
                 .setRepetitions(0)
                 .setTimezone(Timezone.EUROPE_BERLIN)
+                .setProxyConfig(new ProxyConfig(ProxyConfig.Type.SOCKS, "127.0.0.1", 1080))
                 .build();
 
         DeepLTranslator deepLTranslator = new DeepLTranslator(deepLConfiguration);

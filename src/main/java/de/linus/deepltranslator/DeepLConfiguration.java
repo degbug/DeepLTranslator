@@ -1,5 +1,6 @@
 package de.linus.deepltranslator;
 
+import com.machinepublishers.jbrowserdriver.ProxyConfig;
 import com.machinepublishers.jbrowserdriver.Timezone;
 
 import java.time.Duration;
@@ -10,7 +11,7 @@ public class DeepLConfiguration {
     /**
      * If the http response didn't receive within the specified time,
      * the request cancels.
-     *
+     * <p>
      * Default duration is 10 seconds.
      *
      * @see DeepLTranslatorBase#getTranslation(String, Language, Language)
@@ -20,7 +21,7 @@ public class DeepLConfiguration {
     /**
      * Used if an error occurs.
      * -1 is used for repeating the request until it succeeds.
-     *
+     * <p>
      * Default value is 3.
      */
     private int repetitions;
@@ -28,7 +29,7 @@ public class DeepLConfiguration {
     /**
      * Can only be used if {@link DeepLConfiguration#repetitions} isn't zero.
      * This value represents the delay with which the request is repeated.
-     *
+     * <p>
      * Default interval is [3000 + 5000 * retryNumber] milliseconds.
      * Note: The first retry has the retryNumber 0.
      */
@@ -42,17 +43,20 @@ public class DeepLConfiguration {
      */
     private Timezone timezone;
 
-    private DeepLConfiguration(Duration timeout, int repetitions, Function<Integer, Duration> repetitionsDelay, Timezone timezone) {
+    private ProxyConfig proxyConfig;
+
+    private DeepLConfiguration(Duration timeout, int repetitions, Function<Integer, Duration> repetitionsDelay, Timezone timezone, ProxyConfig proxyConfig) {
         this.timeout = timeout;
         this.repetitions = repetitions;
         this.repetitionsDelay = repetitionsDelay;
         this.timezone = timezone;
+        this.proxyConfig = proxyConfig;
     }
 
     /**
      * If the http response didn't receive within the specified time,
      * the request cancels.
-     *
+     * <p>
      * Default duration is 10 seconds.
      *
      * @see DeepLTranslatorBase#getTranslation(String, Language, Language)
@@ -64,7 +68,7 @@ public class DeepLConfiguration {
     /**
      * Used if an error occurs.
      * -1 is used for repeating the request until it succeeds.
-     *
+     * <p>
      * Default value is 3.
      */
     public int getRepetitions() {
@@ -74,7 +78,7 @@ public class DeepLConfiguration {
     /**
      * Can only be used if {@link DeepLConfiguration#repetitions} isn't zero.
      * This value represents the delay with which the request is repeated.
-     *
+     * <p>
      * Default interval is [3000 + 5000 * retryNumber] milliseconds.
      * Note: The first retry has the retryNumber 0.
      */
@@ -92,24 +96,30 @@ public class DeepLConfiguration {
         return timezone;
     }
 
+    public ProxyConfig getProxyConfig() {
+        return proxyConfig;
+    }
+
     public static class Builder {
 
         private Duration timeout;
         private int repetitions;
         private Function<Integer, Duration> repetitionsDelay;
         private Timezone timezone;
+        private ProxyConfig proxyConfig;
 
         public Builder() {
             timeout = Duration.ofSeconds(10);
             repetitions = 3;
             repetitionsDelay = retryNumber -> Duration.ofMillis(3000 + 5000 * retryNumber);
             timezone = Timezone.UTC;
+            proxyConfig = new ProxyConfig();
         }
 
         /**
          * If the http response didn't receive within the specified time,
          * the request cancels.
-         *
+         * <p>
          * Default duration is 10 seconds.
          *
          * @see DeepLTranslatorBase#getTranslation(String, Language, Language)
@@ -122,7 +132,7 @@ public class DeepLConfiguration {
         /**
          * Used if an error occurs.
          * -1 is used for repeating the request until it succeeds.
-         *
+         * <p>
          * Default value is 3.
          */
         public Builder setRepetitions(int repetitions) {
@@ -133,7 +143,7 @@ public class DeepLConfiguration {
         /**
          * Can only be used if {@link DeepLConfiguration#repetitions} isn't zero.
          * This value represents the delay with which the request is repeated.
-         *
+         * <p>
          * Default interval is [3000 + 5000 * retryNumber] milliseconds.
          * Note: The first retry has the retryNumber 0.
          */
@@ -153,11 +163,16 @@ public class DeepLConfiguration {
             return this;
         }
 
+        public Builder setProxyConfig(ProxyConfig proxyConfig) {
+            this.proxyConfig = proxyConfig;
+            return this;
+        }
+
         /**
          * Builds the configuration.
          */
         public DeepLConfiguration build() {
-            return new DeepLConfiguration(timeout, repetitions, repetitionsDelay, timezone);
+            return new DeepLConfiguration(timeout, repetitions, repetitionsDelay, timezone, proxyConfig);
         }
 
     }
